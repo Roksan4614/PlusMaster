@@ -1,40 +1,84 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | PlusMaster</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=405 height=720 tabindex="-1" style="width: 405px; height: 720px; background: #231F20"></canvas>
-    <script src="Build/WebGL_Gate.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="google-signin-client_id"
+    content="715969146256-m4qkmv3ue8laj9muq0tagkvrp35dvu3f.apps.googleusercontent.com">
+  <title>Unity WebGL Player | PlusMaster</title>
+</head>
 
-        document.body.style.textAlign = "left";
-      }
+<body style="text-align: center; padding: 0; border: 0; margin: 0;">
+  <canvas id="unity-canvas" width=405 height=720 tabindex="-1"
+    style="width: 405px; height: 720px; background: #231F20"></canvas>
 
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/WebGL_Gate.data.br",
-        frameworkUrl: "Build/WebGL_Gate.framework.js.br",
-        codeUrl: "Build/WebGL_Gate.wasm.br",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Roksan",
-        productName: "PlusMaster",
-        productVersion: "1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      });
-    </script>
-  </body>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="Build/WebGL_Gate.loader.js"></script>
+
+  <div style="display: flex; justify-content: center; align-items: center;  margin-top: 100px;">
+    <div id="btn_google_signin" class="g-signin2" data-onsuccess="onSignIn" ></div>
+  </div>
+
+  <script>
+
+    var googleSignin = document.getElementById("btn_google_signin");
+    googleSignin.style.display = "none";
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+
+      var canvas = document.querySelector("#unity-canvas");
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      canvas.style.position = "fixed";
+
+      document.body.style.textAlign = "left";
+    }
+
+    var unityInstance;
+    createUnityInstance(document.querySelector("#unity-canvas"), {
+      dataUrl: "Build/WebGL_Gate.data.br",
+      frameworkUrl: "Build/WebGL_Gate.framework.js.br",
+      codeUrl: "Build/WebGL_Gate.wasm.br",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "Roksan",
+      productName: "PlusMaster",
+      productVersion: "1.0",
+      // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+      // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+    }).then(_instance => unityInstance = _instance);
+
+    unityCanvas = document.getElementById("unity-canvas");
+    function UnitySignIn() {
+      unityCanvas.style.display = "none";
+      googleSignin.style.display = "block";
+      //unityCanvas.style.display = "block";
+    }
+
+    function onSignIn(_googleUser) {
+
+      console.log("onSignIn", _googleUser);
+      unityCanvas.style.display = "block";
+      googleSignin.style.display = "none";
+      var profile = _googleUser.getBasicProfile();
+      unityInstance.SendMessage("JavaScriptNetwork", "SetAuthID", profile.ID);
+    }
+
+    function SignOut() {
+      gapi.auth2.getAuthInstance();
+    }
+
+    function ShowAdPopup() {
+      console.log("ShowAdPopup");
+    }
+
+
+  </script>
+</body>
+
 </html>
