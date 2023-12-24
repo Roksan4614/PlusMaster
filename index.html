@@ -76,7 +76,11 @@
       googleSignin.style.display = "flex";
     }
 
-    function UnityStartGame(){
+    function UnityStartGame() {
+    }
+
+    function UnityShowAdPopup() {
+      console.log("ShowAdPopup")
     }
 
     function OnSignIn(_response) {
@@ -96,9 +100,6 @@
       return JSON.parse(jsonPayload);
     }
 
-    function ShowAdPopup() {
-      console.log("ShowAdPopup")
-    }
     window.addEventListener('beforeunload', function (e) {
       unityInstance.SendMessage("NetworkManager", "OnApplicationQuit");
     });
