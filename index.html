@@ -1,91 +1,103 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Plus Master</title>
-  </head>
-  
-  <body style="text-align: center; width: 100%; height: 720px; padding: 0; border: 0; margin: 0;">
-    <script src="Build/WebGL_Gate.loader.js"></script>
-  
-    <div style="width: 100%; height: 720px; display: flex; justify-content: center; align-items: center;  margin-top: 10px;">
-      <canvas id="unity-canvas" width=405 height=720 tabindex="-1"
-        style="width: 405px; height: 720px; background: #231F20"></canvas>
-  
-      <div id="g_id_onload" data-client_id="715969146256-berrqd6urdbb4d4gcov7i7ojdri0anpm.apps.googleusercontent.com"
-        data-context="signin" data-ux_mode="popup" data-callback="OnSignIn" data-auto_prompt="false">
-      </div>
-  
-      <div id="btn_google_signin" class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
-        data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-top: 300px;">
-      </div>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title id="pageTitle">Plus Master</title>
+</head>
+
+<body style="text-align: center; width: 100%; height: 720px; padding: 0; border: 0; margin: 0;">
+  <script id="webGl_Loader" src="0.0.1/Build/WebGL_Gate.loader.js"></script>
+
+  <div
+    style="width: 100%; height: 720px; display: flex; justify-content: center; align-items: center;  margin-top: 10px;">
+    <canvas id="unity-canvas" width=405 height=720 tabindex="-1"
+      style="width: 405px; height: 720px; background: #231F20"></canvas>
+
+    <div id="g_id_onload" data-client_id="715969146256-berrqd6urdbb4d4gcov7i7ojdri0anpm.apps.googleusercontent.com"
+      data-context="signin" data-ux_mode="popup" data-callback="OnSignIn" data-auto_prompt="false">
     </div>
-    <script src="https://accounts.google.com/gsi/client" async></script>
-  
-    <script>
-      var unityInstance;
-      var unityCanvas = document.getElementById("unity-canvas");
-      var googleSignin = document.getElementById("btn_google_signin");
-      googleSignin.style.display = "none";
-  
-  
+
+    <div id="btn_google_signin" class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+      data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-top: 300px;">
+    </div>
+  </div>
+  <script src="https://accounts.google.com/gsi/client" async></script>
+
+  <script>
+    var unityInstance;
+    var unityCanvas = document.getElementById("unity-canvas");
+    var googleSignin = document.getElementById("btn_google_signin");
+    googleSignin.style.display = "none";
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+
+      var canvas = document.querySelector("#unity-canvas");
+      canvas.style.width = "405px";
+      canvas.style.height = "720px";
+      canvas.style.position = "fixed";
+
+      document.body.style.textAlign = "left";
+    }
+
+    var version;
+    {
+      var splits = document.getElementById("webGl_Loader").src.split('/')
+      for (var i = 0; i < splits.length; i++) {
+        if (splits[i] == "Build") {
+          version = splits[i - 1]
+          break
+        }
+      }
+    }
+
+    document.getElementById("pageTitle").innerText = "PlusMaster_" + version;
+
+    createUnityInstance(document.querySelector("#unity-canvas"), {
+      dataUrl: version + "/Build/WebGL_Gate.data.unityweb",
+      frameworkUrl: version + "/Build/WebGL_Gate.framework.js.unityweb",
+      codeUrl: version + "/Build/WebGL_Gate.wasm.unityweb",
+      streamingAssetsUrl: version + "/StreamingAssets",
+      companyName: "Roksan",
+      productName: "PlusMaster",
+      productVersion: "1.0",
+      // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+      // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+    }).then(_instance => unityInstance = _instance);
+
+    function UnitySignIn() {
+      unityCanvas.style.display = "none";
+      googleSignin.style.display = "flex";
+    }
+
+    function OnSignIn(_response) {
       unityCanvas.style.display = "flex";
-  
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-  
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "405px";
-        canvas.style.height = "720px";
-        canvas.style.position = "fixed";
-  
-        document.body.style.textAlign = "left";
-      }
-  
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/WebGL_Gate.data.unityweb",
-        frameworkUrl: "Build/WebGL_Gate.framework.js.unityweb",
-        codeUrl: "Build/WebGL_Gate.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Roksan",
-        productName: "PlusMaster",
-        productVersion: "1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then(_instance => unityInstance = _instance);
-  
-      function UnitySignIn() {
-        unityCanvas.style.display = "none";
-        googleSignin.style.display = "flex";
-      }
-  
-      function OnSignIn(_response) {
-        unityCanvas.style.display = "flex";
-        googleSignin.style.display = "none";
-        console.log(decodeJwtResponse(_response.credential).sub)
-        unityInstance.SendMessage("JavaScriptNetwork", "SetAuthId", decodeJwtResponse(_response.credential).sub);
-      }
-  
-      function decodeJwtResponse(token) {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-  
-        return JSON.parse(jsonPayload);
-      }
-  
-      function ShowAdPopup() {
-        console.log("ShowAdPopup");
-      }
-  
-    </script>
-  </body>
-  
-  </html>
+      googleSignin.style.display = "none";
+      console.log(decodeJwtResponse(_response.credential).sub)
+      unityInstance.SendMessage("JavaScriptNetwork", "SetAuthId", decodeJwtResponse(_response.credential).sub);
+    }
+
+    function decodeJwtResponse(token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      return JSON.parse(jsonPayload);
+    }
+
+    function ShowAdPopup() {
+      console.log("ShowAdPopup");
+    }
+
+  </script>
+</body>
+
+</html>
