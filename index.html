@@ -76,6 +76,9 @@
       googleSignin.style.display = "flex";
     }
 
+    function UnityStartGame(){
+    }
+
     function OnSignIn(_response) {
       unityCanvas.style.display = "flex";
       googleSignin.style.display = "none";
@@ -94,14 +97,10 @@
     }
 
     function ShowAdPopup() {
-      console.log("ShowAdPopup");
+      console.log("ShowAdPopup")
     }
     window.addEventListener('beforeunload', function (e) {
-      // 이벤트 발생 시 새 창 열기
-      window.open('http://naver.com', '_blank');
-
-      // Unity에 메시지 보내기
-      unityInstance.SendMessage("JavaScriptNetwork", "CloseWindow");
+      unityInstance.SendMessage("NetworkManager", "OnApplicationQuit");
     });
   </script>
 </body>
