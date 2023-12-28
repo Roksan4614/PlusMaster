@@ -7,11 +7,33 @@
   <title id="pageTitle">Plus Master</title>
 </head>
 
-<body style="text-align: center; width: 100%; height: 720px; padding: 0; border: 0; margin: 0;">
+<style>
+  /* 스타일을 적용할 요소에 대한 선택자를 지정합니다. 여기서는 클래스를 사용하겠습니다. */
+  .white-border-button {
+    /* 흰색 외곽선을 지정합니다. */
+    border: 2px solid white;
+
+    /* 다른 스타일들을 필요에 따라 추가할 수 있습니다. */
+    width: 100px;
+    height: 40px;
+    background-color: transparent;
+    /* 배경을 투명하게 설정하면 흰색 외곽선이 두드러집니다. */
+    color: white;
+    /* 글자색을 흰색으로 지정합니다. */
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    /* 마우스 포인터를 손가락 형태로 변경합니다. */
+  }
+</style>
+
+
+<body style="text-align: center; width: 100%; height: 100%; padding: 0; border: 0; margin: 0;">
   <script id="webGl_Loader" src="0.0.1/Build/0_Bin.loader.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async></script>
 
   <div
-    style="width: 100%; height: 720px; display: flex; flex-direction: column; justify-content: center; align-items: center;  margin-top: 10px;">
+    style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;  margin-top: 10px;">
 
     <canvas id="unity-canvas" width=405 height=720 tabindex="-1"
       style="width: 405px; height: 720px; background: #231F20"></canvas>
@@ -19,41 +41,46 @@
     <div id="g_id_onload" data-client_id="715969146256-berrqd6urdbb4d4gcov7i7ojdri0anpm.apps.googleusercontent.com"
       data-context="signin" data-ux_mode="popup" data-callback="OnSignIn" data-auto_prompt="false">
     </div>
-
     <div id="btn_google_signin" class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
       data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-top: 300px;">
     </div>
-    
+
+    <div id="btn_loading" tabindex="0" role="button" aria-labelledby="button-label" onclick="OnClickLoading()"
+      style="user-select:none; cursor: default; color:#3c4043; padding-top: 8px; font-size: 20px; font-family: Arial, sans-serif; border-radius:4px; box-sizing: border-box; border: 1px solid #dadce0; width:200px; height: 40px; vertical-align: center; margin-top: 300px;">
+      LOADING...
+    </div>
+
     <input type="text" id="myInput" oninput="handleInput()" maxlength="12" style="opacity: 0;">
   </div>
-
-  <div style="display: flex; justify-content: center; align-items: center;  margin-top: 10px;">
-  </div>
-  <script src="https://accounts.google.com/gsi/client" async></script>
 
   <script>
     var isMobile = /Window/i.test(navigator.userAgent) == false
     var unityInstance
     var unityCanvas = document.getElementById("unity-canvas")
+    unityCanvas.style.display = "none"
     var googleSignin = document.getElementById("btn_google_signin")
     googleSignin.style.display = "none"
     var inputElement = document.getElementById('myInput')
     inputElement.style.display = "none"
 
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      // Mobile device style: fill the whole browser client area with the game canvas:
-      var meta = document.createElement('meta');
-      meta.name = 'viewport';
-      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-      document.getElementsByTagName('head')[0].appendChild(meta);
+    var btnLoading = document.getElementById("btn_loading")
+    //btnLoading.style.display = "none"
 
-      var canvas = document.querySelector("#unity-canvas");
-      canvas.style.width = "405px";
-      canvas.style.height = "720px";
-      canvas.style.position = "fixed";
 
-      document.body.style.textAlign = "left";
-    }
+    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    //   // Mobile device style: fill the whole browser client area with the game canvas:
+    //   var meta = document.createElement('meta');
+    //   meta.name = 'viewport';
+    //   meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+    //   document.getElementsByTagName('head')[0].appendChild(meta);
+
+    //   var canvas = document.querySelector("#unity-canvas");
+    //   canvas.style.width = "405px";
+    //   canvas.style.height = "720px";
+    //   canvas.style.position = "fixed";
+
+    //   document.body.style.textAlign = "left";
+    // }
 
     var version
     {
@@ -78,14 +105,29 @@
       productVersion: "1.0",
       // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
       // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-    }).then(_instance => unityInstance = _instance);
+    }).then(_instance => {
+      unityInstance = _instance
+    });
 
     function UnitySignIn() {
       unityCanvas.style.display = "none"
       googleSignin.style.display = "flex"
+      btnLoading.style.display = "none"
     }
 
     function UnityStartGame() {
+      btnLoading.innerText = "START"
+      btnLoading.style.cursor = "pointer"
+    }
+
+    function OnClickLoading(_isSignIn = false) {
+      if (btnLoading.style.cursor === "pointer" || _isSignIn == true) {
+        btnLoading.style.display = "none"
+        unityCanvas.style.display = "flex"
+
+        if (_isSignIn == false)
+          unityInstance.SendMessage("JavaScriptNetwork", "StartGame", "http://localhost:4000/roksan/");
+      }
     }
 
     function UnityShowAdPopup() {
@@ -119,8 +161,9 @@
     }
 
     function OnSignIn(_response) {
-      unityCanvas.style.display = "flex"
       googleSignin.style.display = "none"
+      OnClickLoading(true);
+
       unityInstance.SendMessage("JavaScriptNetwork", "SetAuthId", decodeJwtResponse(_response.credential).sub)
     }
 
@@ -153,4 +196,5 @@
   
   !-->
 </body>
+
 </html>
