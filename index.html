@@ -121,6 +121,8 @@
       }
     }
 
+    console.log("version: " + version)
+
     document.getElementById("pageTitle").innerText = "PlusMaster_" + version
 
     createUnityInstance(document.querySelector("#unity-canvas"), {
@@ -156,7 +158,9 @@
         if (_isSignIn == false) {
           var userLang = (navigator.language || navigator.userLanguage).toLowerCase() === 'ko-kr' ? "kr" : "en";
           console.log("userLange: " + userLang);
-          unityInstance.SendMessage("JavaScriptNetwork", "StartGame", userLang, "http://localhost:4000/roksan/");
+          unityInstance.SendMessage("JavaScriptNetwork", "StartGame", "http://localhost:4000/roksan/");
+          unityInstance.SendMessage("JavaScriptNetwork", "SetLanguage", userLang);
+
         }
       }
     }
@@ -212,6 +216,7 @@
       unityInstance.SendMessage("NetworkManager", "OnApplicationQuit")
     })
   </script>
+
 
 
   <!--
