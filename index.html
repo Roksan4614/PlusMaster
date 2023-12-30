@@ -28,29 +28,36 @@
 </style>
 
 
-<body style="text-align: center; width: 100%; height: 100%; padding: 0; border: 0; margin: 0;">
+<body style="text-align: center; width: 98%; height: 100%; padding: 0; border: 0; margin: 0; margin-top: 10px;">
+  <!--
+  <body style="text-align: center; width: 100%; height: 100%; padding: 0; border: 0; margin: 0;">
+  -->
   <script id="webGl_Loader" src="0.0.1/Build/0_Bin.loader.js"></script>
   <script src="https://accounts.google.com/gsi/client" async></script>
 
-  <div
-    style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;  margin-top: 10px;">
+  <div style="width: 100%; height: 100%; box-sizing: border-box; padding-left: 10px;
+     display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
 
-    <canvas id="unity-canvas" width=405 height=720 tabindex="-1"
-      style="width: 405px; height: 720px; background: #231F20"></canvas>
+    <div id="border" style=" width:409px; height: 727px;
+     display: flex; flex-direction: column; justify-content: center; align-items: center; 
+     border-radius:4px; box-sizing: border-box; border: 1px solid #dadce0;">
 
-    <div id="g_id_onload" data-client_id="715969146256-berrqd6urdbb4d4gcov7i7ojdri0anpm.apps.googleusercontent.com"
-      data-context="signin" data-ux_mode="popup" data-callback="OnSignIn" data-auto_prompt="false">
+      <canvas id="unity-canvas" tabindex="-1" style="width: 405px; height: 720px; background: #231F20"></canvas>
+
+      <div id="g_id_onload" data-client_id="715969146256-berrqd6urdbb4d4gcov7i7ojdri0anpm.apps.googleusercontent.com"
+        data-context="signin" data-ux_mode="popup" data-callback="OnSignIn" data-auto_prompt="false">
+      </div>
+      <div id="btn_google_signin" class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+        data-text="signin_with" data-size="large" data-logo_alignment="left">
+      </div>
+
+      <div id="btn_loading" tabindex="0" role="button" aria-labelledby="button-label" onclick="OnClickLoading()"
+        style="user-select:none; cursor: default; color:#3c4043; padding-top: 8px; font-size: 20px; font-family: Arial, sans-serif; border-radius:4px; box-sizing: border-box; border: 1px solid #dadce0; width:200px; height: 40px; vertical-align: center;">
+        LOADING...
+      </div>
+
+      <input type="text" id="myInput" oninput="handleInput()" maxlength="12" style="opacity: 0;">
     </div>
-    <div id="btn_google_signin" class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
-      data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-top: 300px;">
-    </div>
-
-    <div id="btn_loading" tabindex="0" role="button" aria-labelledby="button-label" onclick="OnClickLoading()"
-      style="user-select:none; cursor: default; color:#3c4043; padding-top: 8px; font-size: 20px; font-family: Arial, sans-serif; border-radius:4px; box-sizing: border-box; border: 1px solid #dadce0; width:200px; height: 40px; vertical-align: center; margin-top: 300px;">
-      LOADING...
-    </div>
-
-    <input type="text" id="myInput" oninput="handleInput()" maxlength="12" style="opacity: 0;">
   </div>
 
   <script>
@@ -66,21 +73,42 @@
     var btnLoading = document.getElementById("btn_loading")
     //btnLoading.style.display = "none"
 
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
 
-    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    //   // Mobile device style: fill the whole browser client area with the game canvas:
-    //   var meta = document.createElement('meta');
-    //   meta.name = 'viewport';
-    //   meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-    //   document.getElementsByTagName('head')[0].appendChild(meta);
+      var canvas = document.querySelector("#unity-canvas");
 
-    //   var canvas = document.querySelector("#unity-canvas");
-    //   canvas.style.width = "405px";
-    //   canvas.style.height = "720px";
-    //   canvas.style.position = "fixed";
+      var width;
+      var height;
+      // 가로 비율이 더 길다면
+      if (screen.width / screen.height > 405 / 720) {
+        height = screen.height * 0.95
+        width = height * 405 / 720
+      }
+      else{
+        width = screen.width * 0.95
+        height = width * 720 / 405
+      }
 
-    //   document.body.style.textAlign = "left";
-    // }
+      console.log(width, height)
+      var border = document.getElementById("border")
+
+      border.style.width = width+"px"
+      border.style.height = height+"px"
+
+      width *= 0.95
+      height *= 0.95
+      canvas.style.width = width+"px";
+      canvas.style.height = height+"px";
+      canvas.style.position = "fixed";
+      console.log(canvas.style.width, canvas.style.height)
+
+      document.body.style.textAlign = "center";
+    }
 
     var version
     {
@@ -182,10 +210,10 @@
     })
   </script>
 
+
   <!--
 
   <button id="myButton" onclick="onClick()">클릭하세요</button>
-
   <script>
     function onClick() {
       unityCanvas.style.display = "flex"
