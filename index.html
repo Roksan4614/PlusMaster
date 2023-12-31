@@ -73,7 +73,8 @@
     var btnLoading = document.getElementById("btn_loading")
     //btnLoading.style.display = "none"
 
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    if (isMobile) {
       // Mobile device style: fill the whole browser client area with the game canvas:
       var meta = document.createElement('meta');
       meta.name = 'viewport';
@@ -211,9 +212,18 @@
       return JSON.parse(jsonPayload)
     }
 
-    window.addEventListener('beforeunload', function (e) {
+    window.addEventListener('beforeunload', _e => {
       unityInstance.SendMessage("NetworkManager", "OnApplicationQuit")
     })
+
+    if (isMobile) {
+      window.addEventListener('visibilitychange', () => {
+        var isVisible = document.visibilityState === "visible" ? 1 : 0
+        //var isVisible = document.hidden == false ? 1 : 0
+        console.log("visible: " + (isVisible == 1))
+        unityInstance.SendMessage("JavaScriptNetwork", "SetVisibleChange", isVisible)
+      })
+    }
   </script>
 
 
